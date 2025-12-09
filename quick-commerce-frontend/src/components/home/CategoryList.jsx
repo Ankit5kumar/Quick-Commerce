@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 const demo = [
   { name: "Fast Food", icon: "🍔" },
   { name: "Snacks", icon: "🍪" },

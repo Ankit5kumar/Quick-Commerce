@@ -1,55 +1,59 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import CategoryList from "@/components/home/CategoryList";
 import ProductRow from "@/components/home/ProductRow";
+
 export default function Home() {
   const [categories, setCategories] = useState([]);
-  const [rows , setRows] = useState([]);
-  const [loading , setLoading] = useState(true);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const PRODUCTS_PER_ROW = 8;
 
   useEffect(() => {
     let mounted = true;
-    
-    const load = async () =>{
+
+    const load = async () => {
       setLoading(true);
       try {
         const catRes = await api.get("/api/categories");
         const categoriesData = catRes.data.data || catRes.data || [];
 
-        if(!mounted) return;
+        if (!mounted) return;
         setCategories(categoriesData);
 
         const rowsPromises = (categoriesData || []).map(async (cat) => {
-
           try {
-            const pRes = await api.get(`/products?category=${encodeURIComponent(cat.name)}&limit=${PRODUCTS_PER_ROW}}`);
-            
+            const pRes = await api.get(
+              `/api/products?category=${encodeURIComponent(
+                cat.name
+              )}&limit=${PRODUCTS_PER_ROW}}`
+            );
+
             const prods = pRes.data.data || pRes.data || [];
-            return {category: cat, products: prods }
+            return { category: cat, products: prods };
           } catch (error) {
             return { category: cat, products: [] };
           }
-        })
-        const rowsData = await Promise.all(rowsPromises)
-        if(!mounted) return ;
-        setRows(rowsData)
-      } catch (error) {
+        });
+        const rowsData = await Promise.all(rowsPromises);
+        if (!mounted) return;
+        setRows(rowsData);
+      } catch (err) {
         console.error("Failed to load home data:", err);
-      } finally{
-        if(mounted) setLoading(false);
+      } finally {
+        if (mounted) setLoading(false);
       }
-    }
+    };
     load();
-  return () => {
-    mounted=false;
-  }
+    return () => {
+      mounted = false;
+    };
   }, []);
 
- if (loading) {
+  if (loading) {
     return <p className="text-center mt-20">Loading home...</p>;
   }
 
@@ -62,13 +66,20 @@ export default function Home() {
         className="mt-3 w-full px-4 py-2 border rounded-lg shadow-sm"
       />
       <CategoryList categories={categories} />
-      
-      <ProductRow title="Fast Food Near You" products={products.slice(0, 5)} />
-      <ProductRow title="Snacks & Biscuits" products={products.slice(5, 10)} />
-      <ProductRow title="Beverages" products={products.slice(10, 15)} />
-      <ProductRow title="Dairy Essentials" products={products.slice(15, 20)} />
-     
 
+     { rows.map((r)=>(
+      <ProductRow 
+      key={r.category._id}
+      title={r.category.name}
+      products={r.products}
+      caategory={r.category}
+      />
+     ))}
+     
+      {/* Show message if no rows */}
+      {rows.length === 0 && (
+        <p className="mt-8 text-center text-gray-500">No categories or products available.</p>
+      )}
     </div>
   );
 }

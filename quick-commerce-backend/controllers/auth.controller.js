@@ -23,7 +23,8 @@ export const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-      const token = generateToken(user._id);
+
+      const token = generateToken(user._id , user.role);
       res.json({ token, user: { id: user._id, name: user.name, email } });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
