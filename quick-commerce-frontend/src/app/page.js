@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
+import { useRouter } from "next/navigation";
 import CategoryList from "@/components/home/CategoryList";
 import ProductRow from "@/components/home/ProductRow";
 
@@ -9,7 +10,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   const PRODUCTS_PER_ROW = 8;
 
   useEffect(() => {
@@ -18,7 +19,7 @@ export default function Home() {
     const load = async () => {
       setLoading(true);
       try {
-        const catRes = await api.get("/api/categories");
+        const catRes = await api.get("/categories");
         const categoriesData = catRes.data.data || catRes.data || [];
 
         if (!mounted) return;
@@ -27,7 +28,7 @@ export default function Home() {
         const rowsPromises = (categoriesData || []).map(async (cat) => {
           try {
             const pRes = await api.get(
-              `/api/products?category=${encodeURIComponent(
+              `/products?category=${encodeURIComponent(
                 cat.name
               )}&limit=${PRODUCTS_PER_ROW}}`
             );
@@ -64,6 +65,8 @@ export default function Home() {
       <input
         placeholder="Search for fast food, snacks, drinks..."
         className="mt-3 w-full px-4 py-2 border rounded-lg shadow-sm"
+        onFocus={() => router.push("/search")}
+        readOnly
       />
       <CategoryList categories={categories} />
 

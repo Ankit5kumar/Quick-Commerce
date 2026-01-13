@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 export default function Navbar() {
   const { cart } = useCart();
-  console.log("navbar cart", cart);
   const total = cart.reduce((sum, item) => sum + item.quantity, 0 )
   return (
     <nav className="w-full bg-white shadow-md py-4 px-6 flex justify-between items-center">

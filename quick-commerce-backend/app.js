@@ -19,12 +19,14 @@ app.use(compression());
 app.use(morgan("dev"));
 
 // 🚫 Rate Limiter (protect from brute-force)
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 mins
-  max: 100,
-  message: "Too many requests from this IP, please try again later.",
-});
-app.use("/api", limiter);
+// const whitelist = new Set(['127.0.0.1', '::1']);
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 mins
+//   max: 100,
+//   message: "Too many requests from this IP, please try again later.",
+//   skip: (req) => whitelist.has(req.ip)
+// });
+// app.use("/api", limiter);
 
 // 🗄️ DB Connection
 connectDB();

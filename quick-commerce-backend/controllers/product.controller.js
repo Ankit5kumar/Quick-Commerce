@@ -6,7 +6,7 @@ import Category from "../models/category.model.js";
  */
 export const getProducts = async (req, res, next) => {
   try {
-    const { category } = req.query;
+    const { category , search} = req.query;
     let filter = {};
 
     if (category) {
@@ -20,7 +20,13 @@ export const getProducts = async (req, res, next) => {
       }
       filter.category = categoryDoc._id;
     }
-    const products = await Product.find(filter).populate("category").where('isActive').equals(true);
+
+    if(search){
+      filter.name ={$regex: search , $options : 'i'};
+    }
+
+    const products = await Product.find(filter).populate("category")
+    // .where('isActive').equals(true);
     return res.json({ success: true, data: products });
   } catch (error) {
     console.error("Error in getProducts:", error);

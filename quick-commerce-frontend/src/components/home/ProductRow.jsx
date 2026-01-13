@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function ProductRow({ title, products = [], category }) {
    
   if(!products || products.length === 0){
-  return  <div>not items</div>;
+  return  null;
   }
 
   return (
